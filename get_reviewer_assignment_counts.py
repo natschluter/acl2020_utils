@@ -2,6 +2,8 @@
 # A simple program to extract the review load counts per reviewer 
 # wrt submission type.  You can generate the input csv files in the 
 # Spreadsheet Maker on softconf.
+# The output is a tab separated file with a header: Username\tLong\tShort
+# and following lines [username]\tlong_paper_count\tshort_paper_count
 # Contact Natalie nael@itu.dk with any questions
 ####################################################################
 
