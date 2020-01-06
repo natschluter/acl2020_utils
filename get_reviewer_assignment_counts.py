@@ -11,12 +11,21 @@ import csv, collections, argparse
 
 def main(submissions_file, assignments_file, output_counts_file):
     with open(submissions_file, 'r') as sfile:
-        data = csv.reader(sfile, delimiter=',', quotechar='"')
-        smap={d[0]:d[11] for d in data}
+        csv_reader = csv.reader(sfile, delimiter=',', quotechar='"')
+        data=list(csv_reader)
+        subm_type_index=data[0].index('Submission Type')
+        smap={d[0]:d[subm_type_index] for d in data[1:]}  
+        #print(smap)
         smap.pop('Submission ID', None)
     with open(assignments_file, 'r') as afile:
         data = csv.reader(afile, delimiter=',', quotechar='"')
-        amap={d[2]:dict(collections.Counter([smap[x] for x in d[3:-1]])) for d in data}
+        amap={}
+        for d in data:
+            for x in d[3:-1]:
+                if x in smap:
+                    amap[d[2]]=dict(collections.Counter([smap[x] for x in d[3:-1]]))
+                else:
+                    print('Submission', x, 'is missing from assignments')
         amap.pop('Username', None)
         submission_types=['Long','Short']
         with open(output_counts_file,'w') as ofile:
@@ -35,7 +44,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--submissions_file", type=str, required=True, help="The Submission Information csv formatted file from softconf")
-    parser.add_argument("--assignments_file", type=str, required=True, help="The Assignment Information csv formatted file from softconf")
+    parser.add_argument("--assignments_file", type=str, required=True, help="The Assignment Information (by reviewer, no bids) csv formatted file from softconf")
     parser.add_argument("--output_file", type=str, required=True, help="The output file for submission type counts (will be tab separated)")
     
     args = parser.parse_args()
